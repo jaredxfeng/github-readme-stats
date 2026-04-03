@@ -97,6 +97,7 @@ const faker = (query, data) => {
       username: "anuraghazra",
       ...query,
     },
+    headers: {},
   };
   const res = {
     setHeader: jest.fn(),

@@ -77,6 +77,7 @@ afterEach(() => {
 describe("Test /api/top-langs", () => {
   it("should test the request", async () => {
     const req = {
+      headers: {},
       query: {
         username: "anuraghazra",
       },
@@ -95,6 +96,7 @@ describe("Test /api/top-langs", () => {
 
   it("should work with the query options", async () => {
     const req = {
+      headers: {},
       query: {
         username: "anuraghazra",
         hide_title: true,
@@ -128,6 +130,7 @@ describe("Test /api/top-langs", () => {
 
   it("should render error card on user data fetch error", async () => {
     const req = {
+      headers: {},
       query: {
         username: "anuraghazra",
       },
@@ -152,6 +155,7 @@ describe("Test /api/top-langs", () => {
 
   it("should render error card on incorrect layout input", async () => {
     const req = {
+      headers: {},
       query: {
         username: "anuraghazra",
         layout: ["pie"],
@@ -176,6 +180,7 @@ describe("Test /api/top-langs", () => {
 
   it("should render error card if username in blacklist", async () => {
     const req = {
+      headers: {},
       query: {
         username: "renovate-bot",
       },
@@ -200,6 +205,7 @@ describe("Test /api/top-langs", () => {
 
   it("should render error card if wrong locale provided", async () => {
     const req = {
+      headers: {},
       query: {
         username: "anuraghazra",
         locale: "asdf",
@@ -224,6 +230,7 @@ describe("Test /api/top-langs", () => {
 
   it("should have proper cache", async () => {
     const req = {
+      headers: {},
       query: {
         username: "anuraghazra",
       },
