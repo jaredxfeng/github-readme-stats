@@ -17,21 +17,7 @@ import { renderError } from "../src/common/render.js";
 import { fetchTopLanguages } from "../src/fetchers/top-languages.js";
 import { isLocaleAvailable } from "../src/translations.js";
 import { encodeHTML } from "../src/common/html.js";
-
-/**
- * Sanitize user-provided color values.
- * Allows only hex colors of the form #RGB or #RRGGBB (case-insensitive).
- *
- * @param {string | undefined} color
- * @returns {string | undefined}
- */
-const sanitizeColor = (color) => {
-  if (typeof color !== "string") {
-    return undefined;
-  }
-  const hexColorPattern = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
-  return hexColorPattern.test(color) ? color : undefined;
-};
+import { sanitizeColor } from "../src/common/color.js";
 
 // @ts-ignore
 export default async (req, res) => {
@@ -65,7 +51,8 @@ export default async (req, res) => {
   const safeBgColor = sanitizeColor(bg_color);
   const safeBorderColor = sanitizeColor(border_color);
 
-  const secret = req.headers.authorization?.replace(/^Bearer\s+/, '').trim() || null;
+  const secret =
+    req.headers.authorization?.replace(/^Bearer\s+/, "").trim() || null;
 
   res.setHeader("Content-Type", "image/svg+xml");
 
@@ -159,7 +146,9 @@ export default async (req, res) => {
     setCacheHeaders(res, cacheSeconds);
 
     const safeCustomTitle =
-      typeof custom_title === "string" ? encodeHTML(custom_title) : custom_title;
+      typeof custom_title === "string"
+        ? encodeHTML(custom_title)
+        : custom_title;
     const parsedBorderRadius = parseFloat(border_radius);
     const safeBorderRadius = Number.isFinite(parsedBorderRadius)
       ? Math.max(0, Math.min(50, parsedBorderRadius))

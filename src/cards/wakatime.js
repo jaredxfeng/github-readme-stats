@@ -190,9 +190,7 @@ const recalculatePercentages = (languages) => {
  * @param {string} colors.textColor The text color.
  * @returns {string} Card CSS styles.
  */
-const getStyles = ({
-  textColor,
-}) => {
+const getStyles = ({ textColor }) => {
   return `
     .stat {
       font: 600 14px 'Segoe UI', Ubuntu, "Helvetica Neue", Sans-Serif; fill: ${textColor};
@@ -422,9 +420,9 @@ const renderWakatimeCard = (stats = {}, options = { hide: [] }) => {
       : undefined;
 
   const safeBorderRadius =
-    border_radius !== undefined
-      ? clampValue(parseFloat(border_radius), 0, 50)
-      : undefined;
+    border_radius === undefined
+      ? undefined
+      : clampValue(parseFloat(border_radius), 0, 50);
 
   const card = new Card({
     customTitle: safeCustomTitle,

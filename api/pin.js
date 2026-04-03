@@ -16,6 +16,7 @@ import { parseBoolean } from "../src/common/ops.js";
 import { renderError } from "../src/common/render.js";
 import { fetchRepo } from "../src/fetchers/repo.js";
 import { isLocaleAvailable } from "../src/translations.js";
+import { sanitizeColor } from "../src/common/color.js";
 
 // @ts-ignore
 export default async (req, res) => {
@@ -35,6 +36,12 @@ export default async (req, res) => {
     border_color,
     description_lines_count,
   } = req.query;
+
+  const safeTitleColor = sanitizeColor(title_color);
+  const safeTextColor = sanitizeColor(text_color);
+  const safeBgColor = sanitizeColor(bg_color);
+  const safeBorderColor = sanitizeColor(border_color);
+  const safeIconColor = sanitizeColor(icon_color);
 
   res.setHeader("Content-Type", "image/svg+xml");
 
@@ -60,10 +67,10 @@ export default async (req, res) => {
         message: "Something went wrong",
         secondaryMessage: "Language not found",
         renderOptions: {
-          title_color,
-          text_color,
-          bg_color,
-          border_color,
+          title_color: safeTitleColor,
+          text_color: safeTextColor,
+          bg_color: safeBgColor,
+          border_color: safeBorderColor,
           theme,
         },
       }),
@@ -84,13 +91,13 @@ export default async (req, res) => {
     return res.send(
       renderRepoCard(repoData, {
         hide_border: parseBoolean(hide_border),
-        title_color,
-        icon_color,
-        text_color,
-        bg_color,
+        title_color: safeTitleColor,
+        icon_color: safeIconColor,
+        text_color: safeTextColor,
+        bg_color: safeBgColor,
         theme,
         border_radius,
-        border_color,
+        border_color: safeBorderColor,
         show_owner: parseBoolean(show_owner),
         locale: locale ? locale.toLowerCase() : null,
         description_lines_count,
@@ -104,10 +111,10 @@ export default async (req, res) => {
           message: err.message,
           secondaryMessage: retrieveSecondaryMessage(err),
           renderOptions: {
-            title_color,
-            text_color,
-            bg_color,
-            border_color,
+            title_color: safeTitleColor,
+            text_color: safeTextColor,
+            bg_color: safeBgColor,
+            border_color: safeBorderColor,
             theme,
             show_repo_link: !(err instanceof MissingParamError),
           },
@@ -118,10 +125,10 @@ export default async (req, res) => {
       renderError({
         message: "An unknown error occurred",
         renderOptions: {
-          title_color,
-          text_color,
-          bg_color,
-          border_color,
+          title_color: safeTitleColor,
+          text_color: safeTextColor,
+          bg_color: safeBgColor,
+          border_color: safeBorderColor,
           theme,
         },
       }),

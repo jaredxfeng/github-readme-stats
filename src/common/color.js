@@ -141,4 +141,36 @@ const getCardColors = ({
   return { titleColor, iconColor, textColor, bgColor, borderColor, ringColor };
 };
 
-export { isValidHexColor, isValidGradient, getCardColors };
+/**
+ * Sanitize user-provided color values.
+ * Accepts hex colors with or without a leading `#` (3, 4, 6, or 8 hex digits)
+ * and comma-separated gradient strings (e.g. `"30,e96443,904e95"`).
+ * Returns the normalized value without a leading `#`, as expected by
+ * `getCardColors()`, or `undefined` for invalid input.
+ *
+ * @param {string | undefined} color The color string to sanitize.
+ * @returns {string | undefined} The sanitized color string or undefined if invalid.
+ */
+const sanitizeColor = (color) => {
+  if (typeof color !== "string") {
+    return undefined;
+  }
+
+  // Strip optional leading `#`
+  const stripped = color.startsWith("#") ? color.slice(1) : color;
+
+  // Accept plain hex colors (3, 4, 6, or 8 digits)
+  if (isValidHexColor(stripped)) {
+    return stripped;
+  }
+
+  // Accept comma-separated gradients, e.g. "30,e96443,904e95"
+  const parts = stripped.split(",");
+  if (isValidGradient(parts)) {
+    return stripped;
+  }
+
+  return undefined;
+};
+
+export { isValidHexColor, isValidGradient, getCardColors, sanitizeColor };
