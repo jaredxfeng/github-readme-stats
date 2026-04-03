@@ -49,8 +49,9 @@ export default async (req, res) => {
     rank_icon,
     show,
   } = req.query;
-  
-  const secret = req.headers.authorization?.replace(/^Bearer\s+/, '').trim() || null;
+
+  const secret =
+    req.headers.authorization?.replace(/^Bearer\s+/, "").trim() || null;
 
   res.setHeader("Content-Type", "image/svg+xml");
 

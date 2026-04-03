@@ -190,9 +190,7 @@ const recalculatePercentages = (languages) => {
  * @param {string} colors.textColor The text color.
  * @returns {string} Card CSS styles.
  */
-const getStyles = ({
-  textColor,
-}) => {
+const getStyles = ({ textColor }) => {
   return `
     .stat {
       font: 600 14px 'Segoe UI', Ubuntu, "Helvetica Neue", Sans-Serif; fill: ${textColor};

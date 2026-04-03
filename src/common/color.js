@@ -141,4 +141,19 @@ const getCardColors = ({
   return { titleColor, iconColor, textColor, bgColor, borderColor, ringColor };
 };
 
-export { isValidHexColor, isValidGradient, getCardColors };
+/**
+ * Sanitize user-provided color values.
+ * Allows only hex colors of the form #RGB or #RRGGBB (case-insensitive).
+ *
+ * @param {string | undefined} color
+ * @returns {string | undefined}
+ */
+const sanitizeColor = (color) => {
+  if (typeof color !== "string") {
+    return undefined;
+  }
+  const hexColorPattern = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
+  return hexColorPattern.test(color) ? color : undefined;
+};
+
+export { isValidHexColor, isValidGradient, getCardColors, sanitizeColor };
