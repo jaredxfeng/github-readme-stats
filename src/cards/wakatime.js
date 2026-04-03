@@ -6,7 +6,6 @@ import { I18n } from "../common/I18n.js";
 import { clampValue, lowercaseTrim } from "../common/ops.js";
 import { createProgressNode, flexLayout } from "../common/render.js";
 import { wakatimeCardLocales } from "../translations.js";
-import { encodeHTML } from "../common/html.js";
 
 /** Import language colors.
  *
@@ -419,17 +418,17 @@ const renderWakatimeCard = (stats = {}, options = { hide: [] }) => {
 
   const safeCustomTitle =
     typeof custom_title === "string" && custom_title.length > 0
-      ? encodeHTML(custom_title)
+      ? custom_title
       : undefined;
 
   const safeBorderRadius =
-    typeof border_radius === "number"
-      ? border_radius
-      : clampValue(parseFloat(border_radius || "0"), 0, 50);
+    border_radius !== undefined
+      ? clampValue(parseFloat(String(border_radius)), 0, 50)
+      : undefined;
 
   const card = new Card({
     customTitle: safeCustomTitle,
-    defaultTitle: encodeHTML(titleText),
+    defaultTitle: titleText,
     width: normalizedWidth,
     height,
     border_radius: safeBorderRadius,

@@ -2,6 +2,7 @@
 
 import { encodeHTML } from "./html.js";
 import { flexLayout } from "./render.js";
+import { clampValue } from "./ops.js";
 
 class Card {
   /**
@@ -36,7 +37,10 @@ class Card {
     this.hideBorder = false;
     this.hideTitle = false;
 
-    this.border_radius = border_radius;
+    const parsed = parseFloat(border_radius);
+    this.border_radius = Number.isFinite(parsed)
+      ? clampValue(parsed, 0, 50)
+      : 4.5;
 
     // returns theme based colors with proper overrides and defaults
     this.colors = colors;
@@ -244,16 +248,16 @@ class Card {
           data-testid="card-bg"
           x="0.5"
           y="0.5"
-          rx=\"${String(this.border_radius)}\"
+          rx="${this.border_radius}"
           height="99%"
           stroke="${this.colors.borderColor}"
-          width=\"${String(this.width - 1)}\"
+          width="${this.width - 1}"
           fill="${
             typeof this.colors.bgColor === "object"
               ? "url(#gradient)"
               : this.colors.bgColor
           }"
-          stroke-opacity=\"${String(this.hideBorder ? 0 : 1)}\"
+          stroke-opacity="${this.hideBorder ? 0 : 1}"
         />
 
         ${this.hideTitle ? "" : this.renderTitle()}
