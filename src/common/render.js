@@ -2,7 +2,7 @@
 
 import { SECONDARY_ERROR_MESSAGES, TRY_AGAIN_LATER } from "./error.js";
 import { getCardColors } from "./color.js";
-import { escapeSvgAttribute } from "./escape.js"
+import { escapeSvgAttribute } from "./escape.js";
 import { encodeHTML } from "./html.js";
 import { clampValue } from "./ops.js";
 
@@ -108,8 +108,8 @@ const iconWithLabel = (icon, label, testid, iconSize) => {
         y="-12"
         viewBox="0 0 16 16"
         version="1.1"
-        width=\"${String(iconSize)}\"
-        height=\"${String(iconSize)}\"
+        width="${String(iconSize)}"
+        height="${String(iconSize)}"
       >
         ${icon}
       </svg>
