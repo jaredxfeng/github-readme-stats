@@ -2,7 +2,7 @@
 
 import { renderError } from "./render.js";
 import { blacklist } from "./blacklist.js";
-import { whitelist, gistWhitelist } from "./envs.js";
+import { whitelist, gistWhitelist, apiSecret } from "./envs.js";
 
 const NOT_WHITELISTED_USERNAME_MESSAGE = "This username is not whitelisted";
 const NOT_WHITELISTED_GIST_MESSAGE = "This gist ID is not whitelisted";
@@ -16,13 +16,29 @@ const BLACKLISTED_MESSAGE = "This username is blacklisted";
  * @param {string} args.id Resource identifier (username or gist id).
  * @param {"username"|"gist"|"wakatime"} args.type The type of identifier.
  * @param {{ title_color?: string, text_color?: string, bg_color?: string, border_color?: string, theme?: string }} args.colors Color options for the error card.
+ * @param {string} [args.secret] Optional API secret from query string.
  * @returns {{ isPassed: boolean, result?: any }} The result object indicating success or failure.
  */
-const guardAccess = ({ res, id, type, colors }) => {
+const guardAccess = ({ res, id, type, colors, secret }) => {
   if (!["username", "gist", "wakatime"].includes(type)) {
     throw new Error(
       'Invalid type. Expected "username", "gist", or "wakatime".',
     );
+  }
+
+  // API secret check
+  if (apiSecret && secret !== apiSecret) {
+    const result = res.send(
+      renderError({
+        message: "Forbidden",
+        secondaryMessage: "Invalid or missing API secret",
+        renderOptions: {
+          ...colors,
+          show_repo_link: false,
+        },
+      }),
+    );
+    return { isPassed: false, result };
   }
 
   const currentWhitelist = type === "gist" ? gistWhitelist : whitelist;

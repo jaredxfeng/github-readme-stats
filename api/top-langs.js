@@ -42,6 +42,7 @@ export default async (req, res) => {
     disable_animations,
     hide_progress,
     stats_format,
+    secret,
   } = req.query;
   res.setHeader("Content-Type", "image/svg+xml");
 
@@ -56,6 +57,7 @@ export default async (req, res) => {
       border_color,
       theme,
     },
+    secret,
   });
   if (!access.isPassed) {
     return access.result;
