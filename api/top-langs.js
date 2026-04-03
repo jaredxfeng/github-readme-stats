@@ -17,6 +17,21 @@ import { renderError } from "../src/common/render.js";
 import { fetchTopLanguages } from "../src/fetchers/top-languages.js";
 import { isLocaleAvailable } from "../src/translations.js";
 
+/**
+ * Sanitize user-provided color values.
+ * Allows only hex colors of the form #RGB or #RRGGBB (case-insensitive).
+ *
+ * @param {string | undefined} color
+ * @returns {string | undefined}
+ */
+const sanitizeColor = (color) => {
+  if (typeof color !== "string") {
+    return undefined;
+  }
+  const hexColorPattern = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
+  return hexColorPattern.test(color) ? color : undefined;
+};
+
 // @ts-ignore
 export default async (req, res) => {
   const {
@@ -43,7 +58,12 @@ export default async (req, res) => {
     hide_progress,
     stats_format,
   } = req.query;
-  
+
+  const safeTitleColor = sanitizeColor(title_color);
+  const safeTextColor = sanitizeColor(text_color);
+  const safeBgColor = sanitizeColor(bg_color);
+  const safeBorderColor = sanitizeColor(border_color);
+
   const secret = req.headers.authorization?.replace(/^Bearer\s+/, '').trim() || null;
 
   res.setHeader("Content-Type", "image/svg+xml");
@@ -71,10 +91,10 @@ export default async (req, res) => {
         message: "Something went wrong",
         secondaryMessage: "Locale not found",
         renderOptions: {
-          title_color,
-          text_color,
-          bg_color,
-          border_color,
+          title_color: safeTitleColor,
+          text_color: safeTextColor,
+          bg_color: safeBgColor,
+          border_color: safeBorderColor,
           theme,
         },
       }),
@@ -91,10 +111,10 @@ export default async (req, res) => {
         message: "Something went wrong",
         secondaryMessage: "Incorrect layout input",
         renderOptions: {
-          title_color,
-          text_color,
-          bg_color,
-          border_color,
+          title_color: safeTitleColor,
+          text_color: safeTextColor,
+          bg_color: safeBgColor,
+          border_color: safeBorderColor,
           theme,
         },
       }),
@@ -111,10 +131,10 @@ export default async (req, res) => {
         message: "Something went wrong",
         secondaryMessage: "Incorrect stats_format input",
         renderOptions: {
-          title_color,
-          text_color,
-          bg_color,
-          border_color,
+          title_color: safeTitleColor,
+          text_color: safeTextColor,
+          bg_color: safeBgColor,
+          border_color: safeBorderColor,
           theme,
         },
       }),
@@ -144,14 +164,14 @@ export default async (req, res) => {
         hide_border: parseBoolean(hide_border),
         card_width: parseInt(card_width, 10),
         hide: parseArray(hide),
-        title_color,
-        text_color,
-        bg_color,
+        title_color: safeTitleColor,
+        text_color: safeTextColor,
+        bg_color: safeBgColor,
         theme,
         layout,
         langs_count,
         border_radius,
-        border_color,
+        border_color: safeBorderColor,
         locale: locale ? locale.toLowerCase() : null,
         disable_animations: parseBoolean(disable_animations),
         hide_progress: parseBoolean(hide_progress),
@@ -166,10 +186,10 @@ export default async (req, res) => {
           message: err.message,
           secondaryMessage: retrieveSecondaryMessage(err),
           renderOptions: {
-            title_color,
-            text_color,
-            bg_color,
-            border_color,
+            title_color: safeTitleColor,
+            text_color: safeTextColor,
+            bg_color: safeBgColor,
+            border_color: safeBorderColor,
             theme,
             show_repo_link: !(err instanceof MissingParamError),
           },
@@ -180,10 +200,10 @@ export default async (req, res) => {
       renderError({
         message: "An unknown error occurred",
         renderOptions: {
-          title_color,
-          text_color,
-          bg_color,
-          border_color,
+          title_color: safeTitleColor,
+          text_color: safeTextColor,
+          bg_color: safeBgColor,
+          border_color: safeBorderColor,
           theme,
         },
       }),
