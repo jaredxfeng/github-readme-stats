@@ -244,16 +244,16 @@ class Card {
           data-testid="card-bg"
           x="0.5"
           y="0.5"
-          rx="${this.border_radius}"
+          rx=\"${String(this.border_radius)}\"
           height="99%"
           stroke="${this.colors.borderColor}"
-          width="${this.width - 1}"
+          width=\"${String(this.width - 1)}\"
           fill="${
             typeof this.colors.bgColor === "object"
               ? "url(#gradient)"
               : this.colors.bgColor
           }"
-          stroke-opacity="${this.hideBorder ? 0 : 1}"
+          stroke-opacity=\"${String(this.hideBorder ? 0 : 1)}\"
         />
 
         ${this.hideTitle ? "" : this.renderTitle()}

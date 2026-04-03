@@ -76,7 +76,7 @@ const createCompactLangNode = ({ lang, x, y, display_format }) => {
   const value = formatLanguageValue({ display_format, lang });
 
   return `
-    <g transform="translate(${x}, ${y})">
+    <g transform="translate(${String(x)}, ${String(y)})">
       <circle cx="5" cy="6" r="5" fill="${color}" />
       <text data-testid="lang-name" x="15" y="10" class='lang-name'>
         ${lang.name} - ${value}
@@ -188,13 +188,10 @@ const recalculatePercentages = (languages) => {
  * Retrieves CSS styles for a card.
  *
  * @param {Object} colors The colors to use for the card.
- * @param {string} colors.titleColor The title color.
  * @param {string} colors.textColor The text color.
  * @returns {string} Card CSS styles.
  */
 const getStyles = ({
-  // eslint-disable-next-line no-unused-vars
-  titleColor,
   textColor,
 }) => {
   return `
@@ -312,7 +309,6 @@ const renderWakatimeCard = (stats = {}, options = { hide: [] }) => {
   let height = Math.max(45 + (filteredLanguages.length + 1) * lheight, 150);
 
   const cssStyles = getStyles({
-    titleColor,
     textColor,
   });
 
@@ -340,9 +336,9 @@ const renderWakatimeCard = (stats = {}, options = { hide: [] }) => {
           <rect
             mask="url(#rect-mask)"
             data-testid="lang-progress"
-            x="${progressOffset}"
+            x="${String(progressOffset)}"
             y="0"
-            width="${progress}"
+            width="${String(progress)}"
             height="8"
             fill="${languageColor}"
           />
@@ -429,22 +425,7 @@ const renderWakatimeCard = (stats = {}, options = { hide: [] }) => {
   const safeBorderRadius =
     typeof border_radius === "number"
       ? border_radius
-      : clampValue(parseFloat(border_radius || 0), 0, 50);
-
-  const {
-    titleColor,
-    textColor,
-    iconColor,
-    bgColor,
-    borderColor,
-  } = getCardColors({
-    title_color,
-    text_color,
-    icon_color,
-    bg_color,
-    border_color,
-    theme,
-  });
+      : clampValue(parseFloat(border_radius || "0"), 0, 50);
 
   const card = new Card({
     customTitle: safeCustomTitle,

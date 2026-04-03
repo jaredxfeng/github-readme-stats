@@ -21,9 +21,9 @@ const flexLayout = ({ items, gap, direction, sizes = [] }) => {
   // filter() for filtering out empty strings
   return items.filter(Boolean).map((item, i) => {
     const size = sizes[i] || 0;
-    let transform = `translate(${lastSize}, 0)`;
+    let transform = `translate(${String(lastSize)}, 0)`;
     if (direction === "column") {
-      transform = `translate(0, ${lastSize})`;
+      transform = `translate(0, ${String(lastSize)})`;
     }
     lastSize += size + gap;
     return `<g transform="${transform}">${item}</g>`;
@@ -73,15 +73,15 @@ const createProgressNode = ({
   const progressPercentage = clampValue(progress, 2, 100);
 
   return `
-    <svg width="${width}" x="${x}" y="${y}">
-      <rect rx="5" ry="5" x="0" y="0" width="${width}" height="8" fill="${progressBarBackgroundColor}"></rect>
-      <svg data-testid="lang-progress" width="${progressPercentage}%">
+    <svg width=\"${String(width)}\" x=\"${String(x)}\" y=\"${String(y)}\">
+      <rect rx=\"5\" ry=\"5\" x=\"0\" y=\"0\" width=\"${String(width)}\" height=\"8\" fill=\"${progressBarBackgroundColor}\"></rect>
+      <svg data-testid=\"lang-progress\" width=\"${String(progressPercentage)}%\">
         <rect
             height="8"
             fill="${color}"
             rx="5" ry="5" x="0" y="0"
             class="lang-progress"
-            style="animation-delay: ${delay}ms;"
+            style=\"animation-delay: ${String(delay)}ms;\"
         />
       </svg>
     </svg>
@@ -107,8 +107,8 @@ const iconWithLabel = (icon, label, testid, iconSize) => {
         y="-12"
         viewBox="0 0 16 16"
         version="1.1"
-        width="${iconSize}"
-        height="${iconSize}"
+        width=\"${String(iconSize)}\"
+        height=\"${String(iconSize)}\"
       >
         ${icon}
       </svg>
@@ -166,14 +166,14 @@ const renderError = ({
   });
 
   return `
-    <svg width="${ERROR_CARD_LENGTH}"  height="120" viewBox="0 0 ${ERROR_CARD_LENGTH} 120" fill="${bgColor}" xmlns="http://www.w3.org/2000/svg">
+    <svg width=\"${String(ERROR_CARD_LENGTH)}\"  height=\"120\" viewBox=\"0 0 ${String(ERROR_CARD_LENGTH)} 120\" fill=\"${bgColor}\" xmlns=\"http://www.w3.org/2000/svg\">
     <style>
     .text { font: 600 16px 'Segoe UI', Ubuntu, Sans-Serif; fill: ${titleColor} }
     .small { font: 600 12px 'Segoe UI', Ubuntu, Sans-Serif; fill: ${textColor} }
     .gray { fill: #858585 }
     </style>
     <rect x="0.5" y="0.5" width="${
-      ERROR_CARD_LENGTH - 1
+      String(ERROR_CARD_LENGTH - 1)
     }" height="99%" rx="4.5" fill="${bgColor}" stroke="${borderColor}"/>
     <text x="25" y="45" class="text">Something went wrong!${
       UPSTREAM_API_ERRORS.includes(secondaryMessage) || !show_repo_link
