@@ -423,7 +423,7 @@ const renderWakatimeCard = (stats = {}, options = { hide: [] }) => {
 
   const safeBorderRadius =
     border_radius !== undefined
-      ? clampValue(parseFloat(String(border_radius)), 0, 50)
+      ? clampValue(parseFloat(border_radius), 0, 50)
       : undefined;
 
   const card = new Card({
