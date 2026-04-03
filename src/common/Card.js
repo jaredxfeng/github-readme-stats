@@ -216,8 +216,8 @@ class Card {
         role="img"
         aria-labelledby="descId"
       >
-        <title id="titleId">${this.a11yTitle}</title>
-        <desc id="descId">${this.a11yDesc}</desc>
+        <title id="titleId">${encodeHTML(this.a11yTitle || "")}</title>
+        <desc id="descId">${encodeHTML(this.a11yDesc || "")}</desc>
         <style>
           .header {
             font: 600 18px 'Segoe UI', Ubuntu, Sans-Serif;
