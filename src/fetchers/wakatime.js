@@ -4,36 +4,45 @@ import axios from "axios";
 import { CustomError, MissingParamError } from "../common/error.js";
 
 /**
- * Validates that an api_domain value is a safe public hostname.
- * Rejects IP addresses and internal/loopback hostnames to prevent SSRF.
+ * Validates and extracts a safe public hostname from a user-supplied domain
+ * string. Returns null if the domain is invalid, an IP address, or a
+ * loopback/internal host name.
  *
- * @param {string} domain The domain to validate.
- * @returns {boolean} Whether the domain is valid and safe.
+ * The returned value is reconstructed entirely from regex capture groups so
+ * that the taint-flow from the original user input is broken.
+ *
+ * @param {string | undefined} rawDomain The raw, user-supplied domain string.
+ * @returns {string | null} A safe hostname (with optional port), or null.
  */
-const isValidApiDomain = (domain) => {
-  if (!domain || typeof domain !== "string") {
-    return false;
+const extractSafeApiDomain = (rawDomain) => {
+  if (!rawDomain || typeof rawDomain !== "string") {
+    return null;
   }
-  const trimmed = domain.replace(/\/$/gi, "");
-  // Each DNS label must start and end with an alphanumeric character; hyphens
-  // are only allowed in the middle. An optional port number is allowed.
-  if (
-    !/^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)*(?::\d+)?$/.test(
-      trimmed,
-    )
-  ) {
-    return false;
+  const cleaned = rawDomain.replace(/\/$/gi, "");
+  // Each DNS label must start and end with an alphanumeric character.
+  // Hyphens are only permitted in the middle of a label.
+  // An optional :port suffix is accepted.
+  const match =
+    /^([a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?)*)(?::(\d+))?$/.exec(
+      cleaned,
+    );
+  if (!match) {
+    return null;
   }
-  const hostname = trimmed.split(":")[0].toLowerCase();
-  // Reject all IPv4 addresses to avoid SSRF against internal networks
-  if (/^(\d{1,3}\.){3}\d{1,3}$/.test(hostname)) {
-    return false;
+  // match[1] is the hostname, match[2] is the optional port.
+  const safeHostname = match[1].toLowerCase();
+  const safePort = match[2];
+  // Reject all IPv4 addresses to prevent SSRF against internal networks.
+  if (/^(?:\d{1,3}\.){3}\d{1,3}$/.test(safeHostname)) {
+    return null;
   }
-  // Reject localhost
-  if (hostname === "localhost") {
-    return false;
+  // Reject localhost.
+  if (safeHostname === "localhost") {
+    return null;
   }
-  return true;
+  // Reconstruct from the captured groups, not from the original user input,
+  // to ensure only the validated parts are used.
+  return safePort ? `${safeHostname}:${safePort}` : safeHostname;
 };
 
 /**
@@ -47,10 +56,7 @@ const fetchWakatimeStats = async ({ username, api_domain }) => {
     throw new MissingParamError(["username"]);
   }
 
-  const resolvedDomain =
-    api_domain && isValidApiDomain(api_domain)
-      ? api_domain.replace(/\/$/gi, "")
-      : "wakatime.com";
+  const resolvedDomain = extractSafeApiDomain(api_domain) ?? "wakatime.com";
 
   try {
     const { data } = await axios.get(
