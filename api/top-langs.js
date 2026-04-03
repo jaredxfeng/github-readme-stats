@@ -16,6 +16,7 @@ import { parseArray, parseBoolean } from "../src/common/ops.js";
 import { renderError } from "../src/common/render.js";
 import { fetchTopLanguages } from "../src/fetchers/top-languages.js";
 import { isLocaleAvailable } from "../src/translations.js";
+import { encodeHTML } from "../src/common/html.js";
 
 /**
  * Sanitize user-provided color values.
@@ -157,9 +158,16 @@ export default async (req, res) => {
 
     setCacheHeaders(res, cacheSeconds);
 
+    const safeCustomTitle =
+      typeof custom_title === "string" ? encodeHTML(custom_title) : custom_title;
+    const parsedBorderRadius = parseFloat(border_radius);
+    const safeBorderRadius = Number.isFinite(parsedBorderRadius)
+      ? Math.max(0, Math.min(50, parsedBorderRadius))
+      : undefined;
+
     return res.send(
       renderTopLanguages(topLangs, {
-        custom_title,
+        custom_title: safeCustomTitle,
         hide_title: parseBoolean(hide_title),
         hide_border: parseBoolean(hide_border),
         card_width: parseInt(card_width, 10),
@@ -170,7 +178,7 @@ export default async (req, res) => {
         theme,
         layout,
         langs_count,
-        border_radius,
+        border_radius: safeBorderRadius,
         border_color: safeBorderColor,
         locale: locale ? locale.toLowerCase() : null,
         disable_animations: parseBoolean(disable_animations),
