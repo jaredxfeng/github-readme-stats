@@ -2,6 +2,7 @@
 
 import { SECONDARY_ERROR_MESSAGES, TRY_AGAIN_LATER } from "./error.js";
 import { getCardColors } from "./color.js";
+import { escapeSvgAttribute } from "./escape.js"
 import { encodeHTML } from "./html.js";
 import { clampValue } from "./ops.js";
 
@@ -165,27 +166,42 @@ const renderError = ({
     theme,
   });
 
+  const mainMessage =
+    UPSTREAM_API_ERRORS.includes(secondaryMessage) || !show_repo_link
+      ? "Something went wrong!"
+      : "Something went wrong! file an issue at https://tiny.one/readme-stats";
+
   return `
-    <svg width=\"${String(ERROR_CARD_LENGTH)}\"  height=\"120\" viewBox=\"0 0 ${String(ERROR_CARD_LENGTH)} 120\" fill=\"${bgColor}\" xmlns=\"http://www.w3.org/2000/svg\">
+  <svg
+    width="${escapeSvgAttribute(ERROR_CARD_LENGTH)}"
+    height="120"
+    viewBox="0 0 ${escapeSvgAttribute(ERROR_CARD_LENGTH)} 120"
+    fill="${escapeSvgAttribute(bgColor)}"
+    xmlns="http://www.w3.org/2000/svg">
+
     <style>
-    .text { font: 600 16px 'Segoe UI', Ubuntu, Sans-Serif; fill: ${titleColor} }
-    .small { font: 600 12px 'Segoe UI', Ubuntu, Sans-Serif; fill: ${textColor} }
-    .gray { fill: #858585 }
+      .text { font: 600 16px 'Segoe UI', Ubuntu, Sans-Serif; fill: ${escapeSvgAttribute(titleColor)}; }
+      .small { font: 600 12px 'Segoe UI', Ubuntu, Sans-Serif; fill: ${escapeSvgAttribute(textColor)}; }
+      .gray { fill: #858585; }
     </style>
-    <rect x="0.5" y="0.5" width="${
-      String(ERROR_CARD_LENGTH - 1)
-    }" height="99%" rx="4.5" fill="${bgColor}" stroke="${borderColor}"/>
-    <text x="25" y="45" class="text">Something went wrong!${
-      UPSTREAM_API_ERRORS.includes(secondaryMessage) || !show_repo_link
-        ? ""
-        : " file an issue at https://tiny.one/readme-stats"
-    }</text>
+
+    <rect
+      x="0.5"
+      y="0.5"
+      width="${escapeSvgAttribute(ERROR_CARD_LENGTH - 1)}"
+      height="99%"
+      rx="4.5"
+      fill="${escapeSvgAttribute(bgColor)}"
+      stroke="${escapeSvgAttribute(borderColor)}" />
+
+    <text x="25" y="45" class="text">${encodeHTML(mainMessage)}</text>
+
     <text data-testid="message" x="25" y="55" class="text small">
       <tspan x="25" dy="18">${encodeHTML(message)}</tspan>
       <tspan x="25" dy="18" class="gray">${encodeHTML(secondaryMessage)}</tspan>
     </text>
-    </svg>
-  `;
+  </svg>
+  `.trim();
 };
 
 /**
