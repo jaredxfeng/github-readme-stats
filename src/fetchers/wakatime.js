@@ -8,9 +8,6 @@ import { CustomError, MissingParamError } from "../common/error.js";
  * string. Returns null if the domain is invalid, an IP address, or a
  * loopback/internal host name.
  *
- * The returned value is reconstructed entirely from regex capture groups so
- * that the taint-flow from the original user input is broken.
- *
  * @param {string | undefined} rawDomain The raw, user-supplied domain string.
  * @returns {string | null} A safe hostname (with optional port), or null.
  */
@@ -18,31 +15,23 @@ const extractSafeApiDomain = (rawDomain) => {
   if (!rawDomain || typeof rawDomain !== "string") {
     return null;
   }
-  const cleaned = rawDomain.replace(/\/$/gi, "");
-  // Each DNS label must start and end with an alphanumeric character.
-  // Hyphens are only permitted in the middle of a label.
-  // An optional :port suffix is accepted.
-  const match =
-    /^([a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?)*)(?::(\d+))?$/.exec(
-      cleaned,
-    );
-  if (!match) {
+  let parsed;
+  try {
+    // Use URL constructor to normalise and validate the domain.
+    parsed = new URL(`https://${rawDomain.replace(/\/$/gi, "")}/`);
+  } catch {
     return null;
   }
-  // match[1] is the hostname, match[2] is the optional port.
-  const safeHostname = match[1].toLowerCase();
-  const safePort = match[2];
+  const { hostname, port } = parsed;
   // Reject all IPv4 addresses to prevent SSRF against internal networks.
-  if (/^(?:\d{1,3}\.){3}\d{1,3}$/.test(safeHostname)) {
+  if (/^(?:\d{1,3}\.){3}\d{1,3}$/.test(hostname)) {
     return null;
   }
-  // Reject localhost.
-  if (safeHostname === "localhost") {
+  // Reject localhost and IPv6 loopback.
+  if (hostname === "localhost" || hostname === "::1") {
     return null;
   }
-  // Reconstruct from the captured groups, not from the original user input,
-  // to ensure only the validated parts are used.
-  return safePort ? `${safeHostname}:${safePort}` : safeHostname;
+  return port ? `${hostname}:${port}` : hostname;
 };
 
 /**
