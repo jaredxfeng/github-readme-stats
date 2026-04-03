@@ -206,8 +206,15 @@ class Card {
   };
 
   /**
-   * @param {string} body The inner body of the card.
-   * @returns {string} The rendered card.
+   * Renders the card SVG with the given inner body markup.
+   *
+   * NOTE: The {@link body} argument is expected to be a trusted, pre-escaped SVG/HTML
+   * fragment. Callers are responsible for encoding or sanitizing any untrusted data
+   * before constructing this string. Passing raw user input here may lead to
+   * cross-site scripting (XSS) if the resulting SVG is embedded in a browser context.
+   *
+   * @param {string} body Trusted SVG/HTML markup to be injected as the inner body.
+   * @returns {string} The rendered card SVG markup.
    */
   render(body) {
     return `
