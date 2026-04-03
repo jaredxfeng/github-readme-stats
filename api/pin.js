@@ -16,7 +16,7 @@ import { parseBoolean } from "../src/common/ops.js";
 import { renderError } from "../src/common/render.js";
 import { fetchRepo } from "../src/fetchers/repo.js";
 import { isLocaleAvailable } from "../src/translations.js";
-import { sanitizeColor } from "../src/utils/color.js";
+import { sanitizeColor } from "../src/common/color.js";
 
 // @ts-ignore
 export default async (req, res) => {
