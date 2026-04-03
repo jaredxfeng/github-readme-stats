@@ -2,6 +2,7 @@
 
 import { encodeHTML } from "./html.js";
 import { flexLayout } from "./render.js";
+import { clampValue } from "./ops.js";
 
 class Card {
   /**
@@ -36,7 +37,10 @@ class Card {
     this.hideBorder = false;
     this.hideTitle = false;
 
-    this.border_radius = border_radius;
+    const parsed = parseFloat(border_radius);
+    this.border_radius = Number.isFinite(parsed)
+      ? clampValue(parsed, 0, 50)
+      : 4.5;
 
     // returns theme based colors with proper overrides and defaults
     this.colors = colors;
@@ -216,8 +220,8 @@ class Card {
         role="img"
         aria-labelledby="descId"
       >
-        <title id="titleId">${this.a11yTitle}</title>
-        <desc id="descId">${this.a11yDesc}</desc>
+        <title id="titleId">${encodeHTML(this.a11yTitle || "")}</title>
+        <desc id="descId">${encodeHTML(this.a11yDesc || "")}</desc>
         <style>
           .header {
             font: 600 18px 'Segoe UI', Ubuntu, Sans-Serif;
