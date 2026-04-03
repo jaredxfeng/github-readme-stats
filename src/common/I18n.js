@@ -30,10 +30,8 @@ class I18n {
     }
 
     if (!this.translations[str][this.locale]) {
-      const detailedMessage = `'${str}' translation not found for locale '${this.locale}'`;
       // Log detailed message for debugging, but avoid exposing locale-controlled details to clients.
       // eslint-disable-next-line no-console
-      console.warn(detailedMessage);
       throw new Error("Translation for the requested locale is not available");
     }
 
