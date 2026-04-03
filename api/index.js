@@ -48,8 +48,10 @@ export default async (req, res) => {
     border_color,
     rank_icon,
     show,
-    secret,
   } = req.query;
+  
+  const secret = req.headers.authorization?.replace(/^Bearer\s+/, '').trim() || null;
+
   res.setHeader("Content-Type", "image/svg+xml");
 
   const access = guardAccess({

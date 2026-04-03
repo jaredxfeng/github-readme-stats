@@ -42,8 +42,10 @@ export default async (req, res) => {
     disable_animations,
     hide_progress,
     stats_format,
-    secret,
   } = req.query;
+  
+  const secret = req.headers.authorization?.replace(/^Bearer\s+/, '').trim() || null;
+
   res.setHeader("Content-Type", "image/svg+xml");
 
   const access = guardAccess({
