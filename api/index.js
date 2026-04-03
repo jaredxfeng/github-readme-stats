@@ -16,6 +16,7 @@ import { parseArray, parseBoolean } from "../src/common/ops.js";
 import { renderError } from "../src/common/render.js";
 import { fetchStats } from "../src/fetchers/stats.js";
 import { isLocaleAvailable } from "../src/translations.js";
+import { sanitizeColor } from "../src/common/color.js";
 
 // @ts-ignore
 export default async (req, res) => {
@@ -52,6 +53,12 @@ export default async (req, res) => {
 
   const secret =
     req.headers.authorization?.replace(/^Bearer\s+/, "").trim() || null;
+  const safeTitleColor = sanitizeColor(title_color);
+  const safeTextColor = sanitizeColor(text_color);
+  const safeBgColor = sanitizeColor(bg_color);
+  const safeBorderColor = sanitizeColor(border_color);
+  const safeRingColor = sanitizeColor(ring_color);
+  const safeIconColor = sanitizeColor(icon_color);
 
   res.setHeader("Content-Type", "image/svg+xml");
 
@@ -78,10 +85,10 @@ export default async (req, res) => {
         message: "Something went wrong",
         secondaryMessage: "Language not found",
         renderOptions: {
-          title_color,
-          text_color,
-          bg_color,
-          border_color,
+          title_color: safeTitleColor,
+          text_color: safeTextColor,
+          bg_color: safeBgColor,
+          border_color: safeBorderColor,
           theme,
         },
       }),
@@ -120,16 +127,16 @@ export default async (req, res) => {
         include_all_commits: parseBoolean(include_all_commits),
         commits_year: parseInt(commits_year, 10),
         line_height,
-        title_color,
-        ring_color,
-        icon_color,
-        text_color,
+        title_color: safeTitleColor,
+        ring_color: safeRingColor,
+        icon_color: safeIconColor,
+        text_color: safeTextColor,
         text_bold: parseBoolean(text_bold),
-        bg_color,
+        bg_color: safeBgColor,
         theme,
         custom_title,
         border_radius,
-        border_color,
+        border_color: safeBorderColor,
         number_format,
         number_precision: parseInt(number_precision, 10),
         locale: locale ? locale.toLowerCase() : null,
@@ -146,10 +153,10 @@ export default async (req, res) => {
           message: err.message,
           secondaryMessage: retrieveSecondaryMessage(err),
           renderOptions: {
-            title_color,
-            text_color,
-            bg_color,
-            border_color,
+            title_color: safeTitleColor,
+            text_color: safeTextColor,
+            bg_color: safeBgColor,
+            border_color: safeBorderColor,
             theme,
             show_repo_link: !(err instanceof MissingParamError),
           },
@@ -160,10 +167,10 @@ export default async (req, res) => {
       renderError({
         message: "An unknown error occurred",
         renderOptions: {
-          title_color,
-          text_color,
-          bg_color,
-          border_color,
+          title_color: safeTitleColor,
+          text_color: safeTextColor,
+          bg_color: safeBgColor,
+          border_color: safeBorderColor,
           theme,
         },
       }),
