@@ -51,6 +51,9 @@ export default async (req, res) => {
   const safeIconColor = sanitizeColor(icon_color);
   const safeBorderColor = sanitizeColor(border_color);
 
+  const secret =
+    req.headers.authorization?.replace(/^Bearer\s+/, "").trim() || null;
+
   res.setHeader("Content-Type", "image/svg+xml");
 
   const access = guardAccess({
@@ -64,6 +67,7 @@ export default async (req, res) => {
       border_color,
       theme,
     },
+    secret,
   });
   if (!access.isPassed) {
     return access.result;
